@@ -1,0 +1,27 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: food-ordering-backend
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/foodorder?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+
+app:
+  jwt:
+    # Must be at least 32 characters. Override with the JWT_SECRET environment variable in any real deployment.
+    secret: ${JWT_SECRET:change-me-please-use-a-long-random-secret-key-1234567890}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

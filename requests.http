@@ -1,0 +1,73 @@
+### Quick demo of the whole flow (VS Code "REST Client" or IntelliJ HTTP client).
+### Run the requests top to bottom and paste the tokens/ids you get back into the variables.
+
+@host = http://localhost:8080
+@ownerToken = PASTE_OWNER_TOKEN
+@customerToken = PASTE_CUSTOMER_TOKEN
+@restaurantId = 1
+@menuItemId = 1
+@orderId = 1
+
+### 1. Register a restaurant owner
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "name": "Olivia Owner", "email": "owner@example.com", "password": "password123", "role": "RESTAURANT_OWNER" }
+
+### 2. Register a customer
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "name": "Chris Customer", "email": "customer@example.com", "password": "password123", "role": "CUSTOMER" }
+
+### 3. Login (returns a JWT)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "customer@example.com", "password": "password123" }
+
+### 4. Owner creates a restaurant
+POST {{host}}/api/restaurants
+Authorization: Bearer {{ownerToken}}
+Content-Type: application/json
+
+{ "name": "Spice Hub", "description": "North Indian", "city": "Delhi" }
+
+### 5. Owner adds a menu item
+POST {{host}}/api/restaurants/{{restaurantId}}/menu
+Authorization: Bearer {{ownerToken}}
+Content-Type: application/json
+
+{ "name": "Paneer Tikka", "description": "Starter", "price": 149.50, "available": true }
+
+### 6. Anyone can browse (search, filter by city, paginate, sort)
+GET {{host}}/api/restaurants?city=Delhi&q=spice&page=0&size=10&sortBy=name&direction=asc
+
+### 7. Customer adds to cart
+POST {{host}}/api/cart/items
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{ "menuItemId": {{menuItemId}}, "quantity": 2 }
+
+### 8. Customer places the order
+POST {{host}}/api/orders
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{ "deliveryAddress": "12 MG Road, Delhi" }
+
+### 9. Owner moves the order forward (PLACED -> CONFIRMED -> PREPARING -> OUT_FOR_DELIVERY -> DELIVERED)
+PATCH {{host}}/api/orders/{{orderId}}/status
+Authorization: Bearer {{ownerToken}}
+Content-Type: application/json
+
+{ "status": "CONFIRMED" }
+
+### 10. Customer views their orders
+GET {{host}}/api/orders/my
+Authorization: Bearer {{customerToken}}
+
+### 11. Owner views orders for their restaurant
+GET {{host}}/api/orders/restaurant/{{restaurantId}}
+Authorization: Bearer {{ownerToken}}
